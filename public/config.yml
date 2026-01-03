@@ -1,0 +1,23 @@
+backend:
+  name: proxy
+  proxy_url: /api/decap/proxy
+  branch: main
+
+site_url: https://prosolutions-global-advisory-websit-beta.vercel.app
+
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  - name: "insights"
+    label: "Insights"
+    folder: "content/insights"
+    path: "{{slug}}.mdx"
+    create: true
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "Category", name: "category", widget: "select", options: ["Citizenship", "Corporate", "Investment"] }
+      - { label: "Excerpt", name: "excerpt", widget: "text" }
+      - { label: "Cover Image", name: "coverImage", widget: "image", choose_url: true }
+      - { label: "Body", name: "body", widget: "markdown" }

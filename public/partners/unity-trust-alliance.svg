@@ -1,0 +1,11 @@
+<svg width="180" height="60" viewBox="0 0 180 60" xmlns="http://www.w3.org/2000/svg">
+  <rect width="180" height="60" rx="16" fill="#020617" />
+  <path d="M30 42 L45 18 L60 42" stroke="#22D3EE" stroke-width="6" fill="none" stroke-linecap="round" />
+  <path d="M36 32 L54 32" stroke="#0EA5E9" stroke-width="6" stroke-linecap="round" />
+  <text x="80" y="34" font-family="Montserrat, sans-serif" font-size="16" fill="#E2E8F0" letter-spacing="2">
+    UNITY TRUST
+  </text>
+  <text x="80" y="50" font-family="Montserrat, sans-serif" font-size="12" fill="#38BDF8" letter-spacing="4">
+    ALLIANCE
+  </text>
+</svg>

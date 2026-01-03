@@ -1,0 +1,11 @@
+<svg width="180" height="60" viewBox="0 0 180 60" xmlns="http://www.w3.org/2000/svg">
+  <rect width="180" height="60" rx="14" fill="#0B1120" />
+  <path d="M26 44 C34 24 56 18 64 36" stroke="#F97316" stroke-width="6" fill="none" stroke-linecap="round" />
+  <path d="M26 18 C36 36 58 42 66 24" stroke="#FDBA74" stroke-width="6" fill="none" stroke-linecap="round" />
+  <text x="80" y="30" font-family="Arial Black, sans-serif" font-size="16" fill="#F8FAFC" letter-spacing="3">
+    PAN-AFRICA
+  </text>
+  <text x="80" y="48" font-family="Arial, sans-serif" font-size="12" fill="#94A3B8" letter-spacing="4">
+    HOLDINGS
+  </text>
+</svg>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prosolutions CMS</title>
+    <link rel="stylesheet" href="https://unpkg.com/decap-cms@3.1.8/dist/decap-cms.css" />
+  </head>
+  <body>
+    <script>
+      ;(function () {
+        let secret = sessionStorage.getItem("cmsSecret")
+        while (!secret) {
+          const input = window.prompt("Enter CMS access password")
+          if (!input) {
+            alert("Password is required to access the CMS.")
+          } else {
+            secret = input
+            sessionStorage.setItem("cmsSecret", secret)
+          }
+        }
+
+        const originalFetch = window.fetch.bind(window)
+        window.fetch = function (input, init = {}) {
+          const url = typeof input === "string" ? input : input.url
+          if (url?.includes("/api/decap/proxy")) {
+            init.headers = {
+              ...(init.headers || {}),
+              "x-cms-secret": secret,
+            }
+          }
+          return originalFetch(input, init)
+        }
+
+        window.CMS_MANUAL_INIT = true
+        const script = document.createElement("script")
+        script.src = "https://unpkg.com/decap-cms@3.1.8/dist/decap-cms.js"
+        script.onload = () => {
+          if (window.CMS?.init) {
+            window.CMS.init()
+          }
+        }
+        document.body.appendChild(script)
+      })()
+    </script>
+  </body>
+</html>
