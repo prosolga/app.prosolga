@@ -33,6 +33,12 @@ export function SiteHeader() {
 
   const services = [
     {
+      name: "All Services",
+      href: "/services",
+      description: "See the full scope of how we support your global expansion.",
+      icon: Globe2,
+    },
+    {
       name: "Citizenship & Residency",
       href: "/citizenship-relocation",
       description: "CBI, RBI, and relocation concierge for families and executives.",
@@ -56,12 +62,7 @@ export function SiteHeader() {
       description: "Luxury, investment, and commercial property scouting and diligence.",
       icon: Home,
     },
-    {
-      name: "All Services",
-      href: "/services",
-      description: "See the full scope of how we support your global expansion.",
-      icon: Globe2,
-    },
+    
   ]
 
   return (

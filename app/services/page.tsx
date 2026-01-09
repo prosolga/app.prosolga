@@ -62,7 +62,7 @@ export default function ServicesPage() {
   return (
     <div className="flex flex-col min-h-screen">
        <PageHeader
-        title="Employment Migration & Global Talent Mobility"
+        title="All Services "
         subtitle="Connecting skilled workers, professionals, and executives with compliant pathways to work in the Middle East, EU, US, and UK."
         backgroundImage="/collated/2.png"
             //  backgroundImage="/emplo.png"
