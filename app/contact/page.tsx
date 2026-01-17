@@ -9,8 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card"
 import { Mail, Phone, MapPin, Clock } from "lucide-react"
 import { motion } from "framer-motion"
-import { useState } from "react"
-import { toast } from "sonner"
+import { useState, useEffect } from "react"
 
 const offices = [
   {
@@ -35,15 +34,19 @@ const offices = [
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    service: '',
-    message: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    service: "",
+    message: "",
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formStatus, setFormStatus] = useState<{
+    type: "success" | "error" | null
+    message: string
+  }>({ type: null, message: "" })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value })
@@ -56,11 +59,12 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setFormStatus({ type: null, message: "" }) // Clear previous status
 
     try {
-      const res = await fetch('/api/submit-contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/submit-contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -73,37 +77,62 @@ export default function ContactPage() {
 
       const result = await res.json()
 
-      if (result.success) {
-        toast.success(result.message || 'Message sent successfully!')
+      if (res.ok && result.success) {
+        setFormStatus({
+          type: "success",
+          message: result.message || "Message sent successfully! We'll get back to you soon.",
+        })
         setFormData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
-          service: '',
-          message: '',
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          service: "",
+          message: "",
         })
       } else {
-        toast.error('Something went wrong')
+        setFormStatus({
+          type: "error",
+          message: result.error || "Something went wrong. Please try again.",
+        })
       }
     } catch (err) {
-      toast.error('Failed to send message')
+      setFormStatus({
+        type: "error",
+        message: "Failed to send message. Please check your connection and try again.",
+      })
     } finally {
       setIsSubmitting(false)
     }
   }
+
+  // Auto-clear status message after 6 seconds
+  useEffect(() => {
+    if (formStatus.type) {
+      const timer = setTimeout(() => {
+        setFormStatus({ type: null, message: "" })
+      }, 6000)
+      return () => clearTimeout(timer)
+    }
+  }, [formStatus])
+
   return (
     <div className="flex flex-col min-h-screen">
-       <PageHeader
+      <PageHeader
         title="Get in Touch"
         subtitle="Schedule a Confidential Consultation"
         backgroundImage="/contact.jpg"
       />
+
       <section className="py-14 lg:py-20 bg-white">
         <div className="container px-4 md:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             {/* Contact Form */}
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
               <div className="mb-8">
                 <h2 className="text-3xl font-bold text-primary mb-4">Send Us a Message</h2>
                 <p className="text-muted-foreground">
@@ -112,21 +141,34 @@ export default function ContactPage() {
                 </p>
               </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Status Message */}
+              {formStatus.type && (
+                <div
+                  className={`mb-6 p-4 rounded-lg border ${
+                    formStatus.type === "success"
+                      ? "bg-green-50 border-green-200 text-green-800"
+                      : "bg-red-50 border-red-200 text-red-800"
+                  }`}
+                >
+                  <p className="font-medium">{formStatus.message}</p>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="first-name">First name</Label>
-                   <Input
-                    id="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    placeholder="Enter your first name"
-                    required
-                  />
+                    <Label htmlFor="firstName">First name</Label>
+                    <Input
+                      id="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      placeholder="Enter your first name"
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="last-name">Last name</Label>
-                  <Input
+                    <Label htmlFor="lastName">Last name</Label>
+                    <Input
                       id="lastName"
                       value={formData.lastName}
                       onChange={handleChange}
@@ -138,49 +180,62 @@ export default function ContactPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" value={formData.email} onChange={handleChange} required />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="your.email@example.com"
+                    required
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone number</Label>
-                <Input id="phone" type="tel" value={formData.phone} onChange={handleChange} />
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="+234 123 456 7890"
+                  />
                 </div>
 
-             <div className="space-y-2">
-              <Label htmlFor="service">Service Interest</Label>
-              <Select onValueChange={handleSelect} value={formData.service}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a service" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="corporate">Corporate Services</SelectItem>
-                  <SelectItem value="citizenship">Citizenship & Residency</SelectItem>
-                  <SelectItem value="real-estate">International Real Estate Advisory</SelectItem>
-                  <SelectItem value="employment">Employment Migration</SelectItem>
-                  <SelectItem value="other">Other Inquiry</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="service">Service Interest</Label>
+                  <Select onValueChange={handleSelect} value={formData.service}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a service" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="corporate">Corporate Services</SelectItem>
+                      <SelectItem value="citizenship">Citizenship & Residency</SelectItem>
+                      <SelectItem value="real-estate">International Real Estate Advisory</SelectItem>
+                      <SelectItem value="employment">Employment Migration</SelectItem>
+                      <SelectItem value="other">Other Inquiry</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-               <div className="space-y-2">
-                <Label htmlFor="message">Message</Label>
-                <Textarea
-                  id="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="How can we help you?"
-                  className="min-h-[150px]"
-                  required
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="message">Message</Label>
+                  <Textarea
+                    id="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="How can we help you?"
+                    className="min-h-[150px]"
+                    required
+                  />
+                </div>
 
-               <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-secondary hover:bg-secondary/90 text-white h-12 text-lg"
-              >
-                {isSubmitting ? 'Sending...' : 'Send Message'}
-              </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-secondary hover:bg-secondary/90 text-white h-12 text-lg"
+                >
+                  {isSubmitting ? "Sending..." : "Send Message"}
+                </Button>
               </form>
             </motion.div>
 
