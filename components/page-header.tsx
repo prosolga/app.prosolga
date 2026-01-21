@@ -33,7 +33,7 @@ export function PageHeader({ title, subtitle, backgroundImage, backgroundVideo }
         ) : backgroundImage ? (
           <div className="relative h-full w-full">
             <Image
-              src={backgroundImage || "/placeholder.svg"}
+              src={backgroundImage}
               alt={title}
               fill
               className="object-cover opacity-50"
@@ -43,7 +43,7 @@ export function PageHeader({ title, subtitle, backgroundImage, backgroundVideo }
           </div>
         ) : null}
       </div>
-      <div className="container relative z-20 px-4 md:px-6 text-center">
+      <div className="container relative z-20 px-4 md:px-6 text-center mb-16 md:mb-32 lg:mb-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
