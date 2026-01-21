@@ -51,7 +51,7 @@ export function SiteHeader() {
       icon: ShieldCheck,
     },
      {
-      name: "Real Estate Services",
+      name: "International Real Estate Services",
       href: "/real-estate-services",
      
       icon: Home,
