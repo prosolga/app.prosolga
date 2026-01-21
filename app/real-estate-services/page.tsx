@@ -63,7 +63,7 @@ export default function RealEstateServicesPage() {
       <PageHeader
         title="Global Real Estate Advisory"
         subtitle="Strategic Acquisition and Structuring of International Property"
-        backgroundImage="/caribbean-luxury-resort-beach.jpg"
+        // backgroundImage="/caribbean-luxury-resort-beach.jpg"
         backgroundVideo="/estate.mp4"
       />
 
