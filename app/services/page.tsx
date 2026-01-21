@@ -62,7 +62,7 @@ export default function ServicesPage() {
   return (
     <div className="flex flex-col min-h-screen">
         <PageHeader
-        title="All Services "
+        title="Services "
         subtitle="One stop shop for Corporate Services, Citizenship-by-Investment (CBI) Advisory, International Real Estate, and International Talent Placement; delivering structured and compliant solutions for clients operating across global markets."
         backgroundImage="/collated/2.png"
             //  backgroundImage="/emplo.png"
