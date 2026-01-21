@@ -32,39 +32,11 @@ export function SiteHeader() {
   ]
 
   const services = [
-    {
-      name: "All Services",
-      href: "/services",
-    
-      icon: Globe2,
-    },
-     {
-      name: "Corporate Services",
-      href: "/corporate-services",
-     
-      icon: Building2,
-    },
-    {
-      name: "Citizenship & Residency",
-      href: "/citizenship-relocation",
-      
-      icon: ShieldCheck,
-    },
-     {
-      name: "International Real Estate Services",
-      href: "/real-estate-services",
-     
-      icon: Home,
-    },
-    
-    {
-      name: "Employment Migration",
-      href: "/employment-migration",
-     
-      icon: BriefcaseBusiness,
-    },
-   
-   
+    { name: "All Services", href: "/services", icon: Globe2 },
+    { name: "Corporate Services", href: "/corporate-services", icon: Building2 },
+    { name: "Citizenship & Residency", href: "/citizenship-relocation", icon: ShieldCheck },
+    { name: "International Real Estate Services", href: "/real-estate-services", icon: Home },
+    { name: "Employment Migration", href: "/employment-migration", icon: BriefcaseBusiness },
   ]
 
   return (
@@ -72,14 +44,6 @@ export function SiteHeader() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-20 items-center justify-between px-4 md:px-0">
           <Link href="/" className="flex items-center space-x-2">
-            {/* <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white">
-              <Globe className="h-6 w-6" />
-              <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-secondary border-2 border-white"></div>
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="text-xl font-bold text-primary tracking-tight">PROSOLUTIONS</span>
-              <span className="text-xs font-medium text-secondary tracking-widest">GLOBAL ADVISORY</span>
-            </div> */}
             <Image src="/logo.png" alt="ProSolutions Logo" width={180} height={50} />
           </Link>
 
@@ -99,7 +63,7 @@ export function SiteHeader() {
                         {item.name}
                       </NavigationMenuTrigger>
                       <NavigationMenuContent className="shadow-lg border bg-white/95 backdrop-blur">
-                        <div className="grid gap-3 p-4 w-[360px]">
+                        <div className="grid gap-1 p-2 w-[340px]">
                           {services.map((service) => {
                             const Icon = service.icon
                             const isActive = pathname.startsWith(service.href)
@@ -108,18 +72,20 @@ export function SiteHeader() {
                                 key={service.name}
                                 href={service.href}
                                 className={cn(
-                                  "flex items-start gap-3 rounded-xl p-3 hover:bg-primary/5 transition-colors",
-                                  isActive && "border border-primary/20 bg-primary/5",
+                                  "flex items-center gap-2.5 rounded-lg p-2 hover:bg-primary/5 transition-colors text-sm",
+                                  isActive && "bg-primary/5 border border-primary/20",
                                 )}
                               >
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                  <Icon className="h-5 w-5" />
+                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                  <Icon className="h-[18px] w-[18px]" />
                                 </div>
-                                <div>
-                                  <p className={cn("text-sm font-semibold text-foreground", isActive && "text-primary")}>
+                                <div className="leading-tight">
+                                  <p className={cn(
+                                    "font-semibold text-foreground",
+                                    isActive && "text-primary"
+                                  )}>
                                     {service.name}
                                   </p>
-                                  {/* <p className="text-xs text-muted-foreground leading-relaxed">{service.description}</p> */}
                                 </div>
                               </Link>
                             )
@@ -161,10 +127,6 @@ export function SiteHeader() {
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <div className="flex flex-col gap-8 mt-8">
                 <Link href="/" className="flex items-center space-x-2" onClick={() => setIsOpen(false)}>
-                  {/* <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white">
-                    <Globe className="h-5 w-5" />
-                  </div>
-                  <span className="text-lg font-bold text-primary">PROSOLUTIONS</span> */}
                   <Image src="/logo.png" alt="ProSolutions Logo" width={120} height={40} />
                 </Link>
                 <nav className="flex flex-col gap-4 p-4 ">
@@ -279,7 +241,6 @@ export function SiteHeader() {
                   <span className="text-xs text-gray-500">Chat with our team</span>
                 </div>
               </a>
-
               <a
                 href="tel:+2348023383139"
                 className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg transition-colors group"
