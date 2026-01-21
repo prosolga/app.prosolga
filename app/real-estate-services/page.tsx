@@ -47,6 +47,16 @@ const services = [
   },
 ]
 
+const stats = [
+  { value: "7–11%", label: "Average Rental Yields in Key Markets" },
+  { value: "8–15%", label: "Annual Capital Appreciation in High-Growth Locations" },
+  { value: "$15M+", label: "Total Property Transaction Value Closed" },
+  { value: "25+", label: "Developers Partnered Across Global Markets" },
+  { value: "20+", label: "Years Combined Experience" },
+  { value: "30+", label: "Countries Active Developer & Investment Coverage" },
+]
+
+
 export default function RealEstateServicesPage() {
   return (
     <div className="flex flex-col min-h-screen">
@@ -185,6 +195,55 @@ export default function RealEstateServicesPage() {
           </div>
         </div>
       </section>
+
+
+
+{/* STATS SECTION */}
+<section className="py-14 lg:py-20 bg-primary text-white">
+  <div className="container px-4 md:px-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 mb-12 md:mb-16">
+      {/* Top row: 2 featured stats – larger for emphasis */}
+      {stats.slice(0, 2).map((stat, index) => (
+        <motion.div
+          key={stat.label}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: index * 0.15 }}
+          viewport={{ once: true }}
+          className="text-center space-y-3 bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-xl"
+        >
+          <div className="text-5xl md:text-7xl font-extrabold text-secondary">
+            {stat.value}
+          </div>
+          <div className="text-base md:text-xl font-medium uppercase tracking-wider text-blue-100">
+            {stat.label}
+          </div>
+        </motion.div>
+      ))}
+    </div>
+
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+      {/* Bottom row: 4 stats – slightly smaller */}
+      {stats.slice(2).map((stat, index) => (
+        <motion.div
+          key={stat.label}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
+          viewport={{ once: true }}
+          className="text-center space-y-2"
+        >
+          <div className="text-4xl md:text-5xl font-bold text-secondary">
+            {stat.value}
+          </div>
+          <div className="text-sm md:text-base font-medium uppercase tracking-wider text-blue-100">
+            {stat.label}
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  </div>
+</section>
 
       <section className="py-16 bg-white">
         <div className="container px-4 md:px-6">
