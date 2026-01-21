@@ -35,34 +35,36 @@ export function SiteHeader() {
     {
       name: "All Services",
       href: "/services",
-      description: "See the full scope of how we support your global expansion.",
+    
       icon: Globe2,
+    },
+     {
+      name: "Corporate Services",
+      href: "/corporate-services",
+     
+      icon: Building2,
     },
     {
       name: "Citizenship & Residency",
       href: "/citizenship-relocation",
-      description: "CBI, RBI, and relocation concierge for families and executives.",
+      
       icon: ShieldCheck,
     },
-    {
-      name: "Employment Migration",
-      href: "/employment-migration",
-      description: "Work permits, executive mobility, and HR compliance across regions.",
-      icon: BriefcaseBusiness,
-    },
-    {
-      name: "Corporate Services",
-      href: "/corporate-services",
-      description: "Entity setup, governance, structuring, treasury, and compliance.",
-      icon: Building2,
-    },
-    {
+     {
       name: "Real Estate Services",
       href: "/real-estate-services",
-      description: "Luxury, investment, and commercial property scouting and diligence.",
+     
       icon: Home,
     },
     
+    {
+      name: "Employment Migration",
+      href: "/employment-migration",
+     
+      icon: BriefcaseBusiness,
+    },
+   
+   
   ]
 
   return (
@@ -117,7 +119,7 @@ export function SiteHeader() {
                                   <p className={cn("text-sm font-semibold text-foreground", isActive && "text-primary")}>
                                     {service.name}
                                   </p>
-                                  <p className="text-xs text-muted-foreground leading-relaxed">{service.description}</p>
+                                  {/* <p className="text-xs text-muted-foreground leading-relaxed">{service.description}</p> */}
                                 </div>
                               </Link>
                             )
