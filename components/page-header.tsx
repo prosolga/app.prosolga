@@ -12,7 +12,14 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, subtitle, backgroundImage, backgroundVideo }: PageHeaderProps) {
   return (
-    <section className="relative min-h-[80vh] py-32 md:py-48 bg-slate-900 overflow-hidden">
+  <section className="
+  relative 
+  min-h-[80vh] 
+  pt-24 md:pt-32 lg:pt-40          // moderate top
+  pb-48 md:pb-64 lg:pb-80          // generous bottom
+  bg-slate-900 
+  overflow-hidden
+">
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-slate-900/10 z-10" />
         {backgroundVideo ? (
