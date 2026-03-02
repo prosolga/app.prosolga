@@ -14,6 +14,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
+import { redirect } from "next/navigation"
+import { isAdminAuthenticated } from "@/lib/admin-auth"
 
 async function getSubmissions() {
   // This works perfectly in production and development
@@ -101,6 +103,10 @@ function exportToCSV(submissions: any[]) {
 }
 
 export default async function SubmissionsPage() {
+  if (!(await isAdminAuthenticated())) {
+    redirect("/admin/login")
+  }
+
   const submissions = await getSubmissions()
 
   return (
