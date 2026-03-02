@@ -30,7 +30,9 @@ export default function AdminPage() {
 
     const insightsRes = await fetch("/api/admin/insights", { cache: "no-store" })
     if (!insightsRes.ok) {
-      setError("Could not load insights.")
+      const payload = await insightsRes.json().catch(() => ({}))
+      const message = payload?.message ? `${payload.error || "Could not load insights"}: ${payload.message}` : payload?.error
+      setError(message || "Could not load insights.")
       setLoading(false)
       return
     }
@@ -59,7 +61,8 @@ export default function AdminPage() {
 
     const payload = await response.json().catch(() => ({}))
     if (!response.ok) {
-      setError(payload.error || "Could not publish insight.")
+      const message = payload?.message ? `${payload.error || "Could not publish insight"}: ${payload.message}` : payload?.error
+      setError(message || "Could not publish insight.")
       setSubmitting(false)
       return
     }
@@ -79,7 +82,8 @@ export default function AdminPage() {
 
     const payload = await response.json().catch(() => ({}))
     if (!response.ok) {
-      setError(payload.error || "Could not delete insight.")
+      const message = payload?.message ? `${payload.error || "Could not delete insight"}: ${payload.message}` : payload?.error
+      setError(message || "Could not delete insight.")
       return
     }
 
