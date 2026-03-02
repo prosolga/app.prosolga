@@ -15,12 +15,10 @@ import {
 type DeleteInsightButtonProps = {
   slug: string
   title: string
-  deleteAction: (formData: FormData) => Promise<void>
+  onDelete: (slug: string) => Promise<void>
 }
 
-export function DeleteInsightButton({ slug, title, deleteAction }: DeleteInsightButtonProps) {
-  const formId = `delete-insight-${slug}`
-
+export function DeleteInsightButton({ slug, title, onDelete }: DeleteInsightButtonProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -35,19 +33,13 @@ export function DeleteInsightButton({ slug, title, deleteAction }: DeleteInsight
             This will permanently remove <strong>{title}</strong>. This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <form action={deleteAction} id={formId}>
-          <input name="slug" type="hidden" value={slug} />
-        </form>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <button className="bg-red-600 text-white hover:bg-red-700" form={formId} type="submit">
-              Yes, Delete
-            </button>
+          <AlertDialogAction className="bg-red-600 text-white hover:bg-red-700" onClick={() => onDelete(slug)}>
+            Yes, Delete
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   )
 }
-

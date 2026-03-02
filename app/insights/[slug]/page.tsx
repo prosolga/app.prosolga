@@ -4,7 +4,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Calendar, Clock, ArrowLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getAllInsights, getInsightBySlug } from "@/lib/insights";
+import { getAllInsights } from "@/lib/insights";
+import { getInsightBySlug } from "@/lib/insight-detail";
 import { readingTime } from "@/lib/utils"; // ← import here
 
 type InsightPageProps = {
