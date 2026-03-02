@@ -73,7 +73,7 @@ export default function AdminPage() {
   async function handleDelete(slug: string) {
     setError("")
     setSuccess("")
-    const response = await fetch(`/api/admin/insights/${slug}`, {
+    const response = await fetch(`/api/admin/insights?slug=${encodeURIComponent(slug)}`, {
       method: "DELETE",
     })
 
@@ -192,4 +192,3 @@ export default function AdminPage() {
     </main>
   )
 }
-
