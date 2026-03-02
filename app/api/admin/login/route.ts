@@ -7,10 +7,10 @@ export async function POST(request: NextRequest) {
   const password = String(formData.get("password") || "")
 
   if (!validateAdminCredentials(username, password)) {
-    return NextResponse.redirect(new URL("/admin/login?error=invalid", request.url))
+    return NextResponse.redirect(new URL("/admin/login?error=invalid", request.url), 303)
   }
 
-  const response = NextResponse.redirect(new URL("/admin", request.url))
+  const response = NextResponse.redirect(new URL("/admin", request.url), 303)
   response.cookies.set({
     name: ADMIN_SESSION_COOKIE,
     value: createAdminSessionToken(username),
