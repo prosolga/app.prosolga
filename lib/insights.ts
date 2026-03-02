@@ -9,6 +9,7 @@ export type InsightFrontmatter = {
   category: string
   excerpt: string
   coverImage: string
+  enabled?: boolean
 }
 
 export type InsightSummary = InsightFrontmatter & {
@@ -31,17 +32,14 @@ function getInsightFilePaths() {
   return fs.readdirSync(INSIGHTS_DIR).filter((file) => file.endsWith(".mdx"))
 }
 
-function githubHeaders() {
-  if (!GITHUB_TOKEN) {
-    return {
-      Accept: "application/vnd.github+json",
-    }
-  }
-
-  return {
+function githubHeaders(): HeadersInit {
+  const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
-    Authorization: `Bearer ${GITHUB_TOKEN}`,
   }
+  if (GITHUB_TOKEN) {
+    headers.Authorization = `Bearer ${GITHUB_TOKEN}`
+  }
+  return headers
 }
 
 async function getInsightsFromGitHub(): Promise<InsightSummary[]> {
@@ -75,11 +73,12 @@ async function getInsightsFromGitHub(): Promise<InsightSummary[]> {
           slug: file.name.replace(/\.mdx$/, ""),
           ...(data as InsightFrontmatter),
           coverImage: normalizeCoverImage(String((data as InsightFrontmatter).coverImage || "")),
+          enabled: (data as InsightFrontmatter).enabled !== false,
         }
       }),
   )
 
-  return insights.sort((a, b) => (a.date < b.date ? 1 : -1))
+  return insights.filter((item) => item.enabled !== false).sort((a, b) => (a.date < b.date ? 1 : -1))
 }
 
 export async function getAllInsights(limit?: number): Promise<InsightSummary[]> {
@@ -98,8 +97,10 @@ export async function getAllInsights(limit?: number): Promise<InsightSummary[]> 
             slug,
             ...(data as InsightFrontmatter),
             coverImage: normalizeCoverImage(String((data as InsightFrontmatter).coverImage || "")),
+            enabled: (data as InsightFrontmatter).enabled !== false,
           }
         })
+        .filter((item) => item.enabled !== false)
         .sort((a, b) => (a.date < b.date ? 1 : -1))
 
   return typeof limit === "number" ? insights.slice(0, limit) : insights

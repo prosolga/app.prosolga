@@ -21,17 +21,14 @@ function normalizeCoverImage(src: string) {
   return src
 }
 
-function githubHeaders() {
-  if (!GITHUB_TOKEN) {
-    return {
-      Accept: "application/vnd.github+json",
-    }
-  }
-
-  return {
+function githubHeaders(): HeadersInit {
+  const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
-    Authorization: `Bearer ${GITHUB_TOKEN}`,
   }
+  if (GITHUB_TOKEN) {
+    headers.Authorization = `Bearer ${GITHUB_TOKEN}`
+  }
+  return headers
 }
 
 export async function getInsightBySlug(slug: string): Promise<InsightDetail> {
@@ -72,6 +69,10 @@ export async function getInsightBySlug(slug: string): Promise<InsightDetail> {
       parseFrontmatter: true,
     },
   })
+
+  if (frontmatter.enabled === false) {
+    throw new Error(`Insight not found: ${slug}`)
+  }
 
   return {
     slug,

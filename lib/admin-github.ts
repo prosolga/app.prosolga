@@ -29,6 +29,7 @@ export function parseInsightFrontmatter(source: string) {
     category: read("category"),
     excerpt: read("excerpt"),
     coverImage: read("coverImage"),
+    enabled: !/^enabled:\s*false$/m.test(block),
   }
 }
 
