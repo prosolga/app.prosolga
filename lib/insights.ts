@@ -2,7 +2,6 @@ import type React from "react"
 import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
-import { compileMDX } from "next-mdx-remote/rsc"
 
 export type InsightFrontmatter = {
   title: string
@@ -52,6 +51,7 @@ export async function getInsightBySlug(slug: string): Promise<InsightDetail> {
   }
 
   const source = await fs.promises.readFile(filePath, "utf8")
+  const { compileMDX } = await import("next-mdx-remote/rsc")
   const { content, frontmatter } = await compileMDX<InsightFrontmatter>({
     source,
     options: {
