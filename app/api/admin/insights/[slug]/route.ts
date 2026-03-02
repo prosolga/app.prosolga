@@ -1,9 +1,7 @@
 import fs from "fs"
 import path from "path"
-import matter from "gray-matter"
 import { NextRequest, NextResponse } from "next/server"
-import { revalidatePath } from "next/cache"
-import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/admin-auth"
+import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/admin-session"
 
 const INSIGHTS_DIR = path.join(process.cwd(), "content", "insights")
 
@@ -14,6 +12,13 @@ function isValidSlug(input: string) {
 function ensureAuth(request: NextRequest) {
   const token = request.cookies.get(ADMIN_SESSION_COOKIE)?.value
   return token ? verifyAdminSessionToken(token) : null
+}
+
+function getCoverImageFromFrontmatter(source: string) {
+  const frontmatterMatch = source.match(/^---\n([\s\S]*?)\n---/)
+  if (!frontmatterMatch) return ""
+  const coverImageMatch = frontmatterMatch[1].match(/^coverImage:\s*"([^"]+)"/m)
+  return coverImageMatch?.[1] || ""
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
@@ -32,8 +37,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   }
 
   const source = await fs.promises.readFile(outputPath, "utf8")
-  const parsed = matter(source)
-  const coverImage = String(parsed.data?.coverImage || "")
+  const coverImage = getCoverImageFromFrontmatter(source)
 
   await fs.promises.unlink(outputPath)
 
@@ -44,10 +48,5 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     }
   }
 
-  revalidatePath("/")
-  revalidatePath("/insights")
-  revalidatePath(`/insights/${slug}`)
-
   return NextResponse.json({ ok: true, slug })
 }
-

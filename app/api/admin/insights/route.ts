@@ -1,8 +1,7 @@
 import fs from "fs"
 import path from "path"
 import { NextRequest, NextResponse } from "next/server"
-import { revalidatePath } from "next/cache"
-import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/admin-auth"
+import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/admin-session"
 import { getAllInsights } from "@/lib/insights"
 
 const INSIGHTS_DIR = path.join(process.cwd(), "content", "insights")
@@ -97,10 +96,5 @@ ${content}
 
   await fs.promises.writeFile(outputPath, mdx, "utf8")
 
-  revalidatePath("/")
-  revalidatePath("/insights")
-  revalidatePath(`/insights/${slug}`)
-
   return NextResponse.json({ ok: true, slug })
 }
-

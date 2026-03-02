@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { ADMIN_SESSION_COOKIE } from "@/lib/admin-auth"
+import { ADMIN_SESSION_COOKIE } from "@/lib/admin-session"
 
 export async function POST(request: NextRequest) {
   const response = NextResponse.redirect(new URL("/admin/login", request.url))
@@ -14,4 +14,3 @@ export async function POST(request: NextRequest) {
   })
   return response
 }
-

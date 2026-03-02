@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { ADMIN_SESSION_COOKIE, createAdminSessionToken, validateAdminCredentials } from "@/lib/admin-auth"
+import { ADMIN_SESSION_COOKIE, createAdminSessionToken, validateAdminCredentials } from "@/lib/admin-session"
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData()
@@ -22,4 +22,3 @@ export async function POST(request: NextRequest) {
   })
   return response
 }
-
