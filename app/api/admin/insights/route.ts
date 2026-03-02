@@ -104,11 +104,11 @@ export async function POST(request: NextRequest) {
     }
 
     const coverFileName = `${Date.now()}-${slug}${ext}`
-    const imagePath = `public/insight/${coverFileName}`
+    const imagePath = `public/uploads/${coverFileName}`
     const coverBuffer = Buffer.from(await coverImageFile.arrayBuffer()).toString("base64")
     await putRepoFile(imagePath, coverBuffer, `Upload ${imagePath} via Admin`)
 
-    const coverImage = `/insight/${coverFileName}`
+    const coverImage = `/uploads/${coverFileName}`
     const mdx = `---
 title: "${yamlSafe(title)}"
 date: "${date}"
@@ -153,7 +153,7 @@ export async function DELETE(request: NextRequest) {
 
     await deleteRepoFile(insightPath, insightFile.sha, `Delete ${insightPath} via Admin`)
 
-    if (coverImage.startsWith("/insight/")) {
+    if (coverImage.startsWith("/uploads/")) {
       const imagePath = `public/${coverImage.replace(/^\//, "")}`
       const imageFile = await getRepoFileIfExists(imagePath)
       if (imageFile) {

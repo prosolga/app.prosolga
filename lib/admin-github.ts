@@ -97,7 +97,8 @@ export async function putRepoFile(path: string, contentBase64: string, message: 
   })
 
   if (!response.ok) {
-    throw new Error(`Failed to write file: ${path}`)
+    const details = await response.text().catch(() => "")
+    throw new Error(`Failed to write file: ${path} (status ${response.status}) ${details}`)
   }
 
   return response.json()
@@ -116,7 +117,8 @@ export async function deleteRepoFile(path: string, sha: string, message: string)
   })
 
   if (!response.ok) {
-    throw new Error(`Failed to delete file: ${path}`)
+    const details = await response.text().catch(() => "")
+    throw new Error(`Failed to delete file: ${path} (status ${response.status}) ${details}`)
   }
 
   return response.json()

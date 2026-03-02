@@ -1,6 +1,7 @@
 import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
+import { unstable_noStore as noStore } from "next/cache"
 
 export type InsightFrontmatter = {
   title: string
@@ -15,25 +16,91 @@ export type InsightSummary = InsightFrontmatter & {
 }
 
 const INSIGHTS_DIR = path.join(process.cwd(), "content/insights")
+const GITHUB_REPO = process.env.GITHUB_REPO
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH ?? "main"
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN
+
+function normalizeCoverImage(src: string) {
+  if (src.startsWith("/uploads/") && GITHUB_REPO) {
+    return `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/public${src}`
+  }
+  return src
+}
 
 function getInsightFilePaths() {
   return fs.readdirSync(INSIGHTS_DIR).filter((file) => file.endsWith(".mdx"))
 }
 
-export async function getAllInsights(limit?: number): Promise<InsightSummary[]> {
-  const insights = getInsightFilePaths()
-    .map((fileName) => {
-      const slug = fileName.replace(/\.mdx$/, "")
-      const fullPath = path.join(INSIGHTS_DIR, fileName)
-      const fileContents = fs.readFileSync(fullPath, "utf8")
-      const { data } = matter(fileContents)
+function githubHeaders() {
+  if (!GITHUB_TOKEN) {
+    return {
+      Accept: "application/vnd.github+json",
+    }
+  }
 
-      return {
-        slug,
-        ...(data as InsightFrontmatter),
-      }
-    })
-    .sort((a, b) => (a.date < b.date ? 1 : -1))
+  return {
+    Accept: "application/vnd.github+json",
+    Authorization: `Bearer ${GITHUB_TOKEN}`,
+  }
+}
+
+async function getInsightsFromGitHub(): Promise<InsightSummary[]> {
+  if (!GITHUB_REPO) return []
+
+  const listRes = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/content/insights?ref=${encodeURIComponent(GITHUB_BRANCH)}`,
+    {
+      headers: githubHeaders(),
+      cache: "no-store",
+    },
+  )
+
+  if (!listRes.ok) {
+    throw new Error(`Failed to list insights from GitHub: ${listRes.status}`)
+  }
+
+  const files = (await listRes.json()) as Array<{
+    type: string
+    name: string
+    download_url?: string
+  }>
+
+  const insights = await Promise.all(
+    files
+      .filter((file) => file.type === "file" && file.name.endsWith(".mdx") && file.download_url)
+      .map(async (file) => {
+        const source = await fetch(file.download_url!, { cache: "no-store" }).then((res) => res.text())
+        const { data } = matter(source)
+        return {
+          slug: file.name.replace(/\.mdx$/, ""),
+          ...(data as InsightFrontmatter),
+          coverImage: normalizeCoverImage(String((data as InsightFrontmatter).coverImage || "")),
+        }
+      }),
+  )
+
+  return insights.sort((a, b) => (a.date < b.date ? 1 : -1))
+}
+
+export async function getAllInsights(limit?: number): Promise<InsightSummary[]> {
+  noStore()
+
+  const insights = GITHUB_REPO
+    ? await getInsightsFromGitHub()
+    : getInsightFilePaths()
+        .map((fileName) => {
+          const slug = fileName.replace(/\.mdx$/, "")
+          const fullPath = path.join(INSIGHTS_DIR, fileName)
+          const fileContents = fs.readFileSync(fullPath, "utf8")
+          const { data } = matter(fileContents)
+
+          return {
+            slug,
+            ...(data as InsightFrontmatter),
+            coverImage: normalizeCoverImage(String((data as InsightFrontmatter).coverImage || "")),
+          }
+        })
+        .sort((a, b) => (a.date < b.date ? 1 : -1))
 
   return typeof limit === "number" ? insights.slice(0, limit) : insights
 }
