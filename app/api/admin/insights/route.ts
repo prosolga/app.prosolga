@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/admin-session"
 import { deleteRepoFile, getRepoFileIfExists, listRepoFolder, parseInsightFrontmatter, putRepoFile } from "@/lib/admin-github"
+import { revalidatePath } from 'next/cache';
 
 const GITHUB_REPO = process.env.GITHUB_REPO
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH ?? "main"
@@ -287,6 +288,10 @@ export async function PATCH(request: NextRequest) {
     )
 
     await putRepoFile(insightPath, Buffer.from(mdx, "utf8").toString("base64"), `Toggle ${insightPath} via Admin`, insightFile.sha)
+  // ← ADD REVALIDATION HERE
+    revalidatePath('/insights')
+    revalidatePath(`/insights/${slug}`)
+    revalidatePath('/')
     return NextResponse.json({ ok: true, slug, enabled })
   } catch (error) {
     return NextResponse.json(
