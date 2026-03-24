@@ -16,6 +16,7 @@ export async function generateStaticParams() {
   const insights = await getAllInsights();
   return insights.map((item) => ({ slug: item.slug }));
 }
+export const dynamicParams = true;
 
 export default async function InsightPage({ params }: InsightPageProps) {
   const { slug } = await params;
