@@ -142,7 +142,6 @@ export async function POST(request: NextRequest) {
     if (!title || !date || !category || !excerpt || !content) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
-
     if (!coverImage) {
       return NextResponse.json({ error: "Cover image is required" }, { status: 400 })
     }
@@ -172,6 +171,12 @@ export async function POST(request: NextRequest) {
 
     await putRepoFile(insightPath, Buffer.from(mdx, "utf8").toString("base64"), `Create ${insightPath} via Admin`)
 
+    // ==================== REVALIDATION ====================
+    revalidatePath('/insights')
+    revalidatePath(`/insights/${slug}`)
+    revalidatePath('/')
+    // ======================================================
+
     return NextResponse.json({ ok: true, slug })
   } catch (error) {
     return NextResponse.json(
@@ -181,6 +186,85 @@ export async function POST(request: NextRequest) {
   }
 }
 
+export async function PUT(request: NextRequest) {
+  if (!ensureAuth(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  try {
+    const formData = await request.formData()
+    const currentSlug = String(formData.get("currentSlug") || "").trim()
+    const title = String(formData.get("title") || "").trim()
+    const date = String(formData.get("date") || "").trim()
+    const category = String(formData.get("category") || "").trim()
+    const excerpt = String(formData.get("excerpt") || "").trim()
+    const content = String(formData.get("content") || "").trim()
+    const nextSlugInput = String(formData.get("nextSlug") || "").trim()
+    const coverImage = String(formData.get("coverImage") || "").trim()
+    const enabled = String(formData.get("enabled") || "true").trim() !== "false"
+
+    if (!currentSlug || !isValidSlug(currentSlug)) {
+      return NextResponse.json({ error: "Invalid current slug" }, { status: 400 })
+    }
+    if (!title || !date || !category || !excerpt || !content || !coverImage) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    const nextSlug = toSlug(nextSlugInput || currentSlug)
+    if (!nextSlug || !isValidSlug(nextSlug)) {
+      return NextResponse.json({ error: "Invalid slug" }, { status: 400 })
+    }
+
+    const currentPath = `content/insights/${currentSlug}.mdx`
+    const currentFile = await getRepoFileIfExists(currentPath)
+    if (!currentFile) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 })
+    }
+
+    const nextPath = `content/insights/${nextSlug}.mdx`
+    if (nextSlug !== currentSlug) {
+      const existing = await getRepoFileIfExists(nextPath)
+      if (existing) {
+        return NextResponse.json({ error: "Target slug already exists" }, { status: 409 })
+      }
+    }
+
+    const mdx = buildMdx(
+      {
+        title,
+        date,
+        category,
+        excerpt,
+        coverImage,
+        enabled,
+      },
+      content,
+    )
+
+    if (nextSlug === currentSlug) {
+      await putRepoFile(nextPath, Buffer.from(mdx, "utf8").toString("base64"), `Update ${nextPath} via Admin`, currentFile.sha)
+    } else {
+      await putRepoFile(nextPath, Buffer.from(mdx, "utf8").toString("base64"), `Rename ${currentPath} to ${nextPath} via Admin`)
+      await deleteRepoFile(currentPath, currentFile.sha, `Delete ${currentPath} via Admin`)
+    }
+
+    // ==================== REVALIDATION ====================
+    revalidatePath('/insights')
+    revalidatePath(`/insights/${nextSlug}`)
+    if (nextSlug !== currentSlug) {
+      revalidatePath(`/insights/${currentSlug}`) // optional: clean old slug
+    }
+    revalidatePath('/')
+    // ======================================================
+
+    return NextResponse.json({ ok: true, slug: nextSlug })
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Could not update insight", message: error instanceof Error ? error.message : String(error) },
+      { status: 500 },
+    )
+  }
+}
 export async function PUT(request: NextRequest) {
   if (!ensureAuth(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
