@@ -1,4 +1,4 @@
-export const dynamicParams = true;
+
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -17,6 +17,7 @@ export async function generateStaticParams() {
   return insights.map((item) => ({ slug: item.slug }));
 }
 export const dynamicParams = true;
+export const dynamic = 'force-dynamic';
 
 export default async function InsightPage({ params }: InsightPageProps) {
   const { slug } = await params;
