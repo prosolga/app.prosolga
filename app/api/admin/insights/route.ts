@@ -18,6 +18,16 @@ function yamlSafe(input: string) {
   return input.replace(/"/g, '\\"')
 }
 
+function formatYamlValue(input: string) {
+  if (input.includes("\n")) {
+    return `|\n${input
+      .split(/\r?\n/)
+      .map((line) => `  ${line}`)
+      .join("\n")}`
+  }
+  return `"${yamlSafe(input)}"`
+}
+
 function isValidSlug(input: string) {
   return /^[a-z0-9-]+$/.test(input)
 }
@@ -41,7 +51,7 @@ function buildMdx(frontmatter: {
 title: "${yamlSafe(frontmatter.title)}"
 date: "${frontmatter.date}"
 category: "${yamlSafe(frontmatter.category)}"
-excerpt: "${yamlSafe(frontmatter.excerpt)}"
+excerpt: ${formatYamlValue(frontmatter.excerpt)}
 coverImage: "${yamlSafe(frontmatter.coverImage)}"
 enabled: ${frontmatter.enabled ? "true" : "false"}
 ---

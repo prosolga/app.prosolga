@@ -4,6 +4,7 @@ import path from "path"
 import { compileMDX } from "next-mdx-remote/rsc"
 import { unstable_noStore as noStore } from "next/cache"
 import type { InsightFrontmatter, InsightSummary } from "@/lib/insights"
+import { normalizeInsightFrontmatterSource } from "@/lib/utils"
 
 export type InsightDetail = InsightSummary & {
   content: React.ReactElement
@@ -63,6 +64,7 @@ export async function getInsightBySlug(slug: string): Promise<InsightDetail> {
     source = await fs.promises.readFile(filePath, "utf8")
   }
   
+  source = normalizeInsightFrontmatterSource(source)
   const { content, frontmatter } = await compileMDX<InsightFrontmatter>({
     source,
     options: {

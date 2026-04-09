@@ -2,6 +2,7 @@ import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
 import { unstable_noStore as noStore } from "next/cache"
+import { normalizeInsightFrontmatterSource } from "@/lib/utils"
 
 export type InsightFrontmatter = {
   title: string
@@ -68,7 +69,8 @@ async function getInsightsFromGitHub(): Promise<InsightSummary[]> {
       .filter((file) => file.type === "file" && file.name.endsWith(".mdx") && file.download_url)
       .map(async (file) => {
         const source = await fetch(file.download_url!, { cache: "no-store" }).then((res) => res.text())
-        const { data } = matter(source)
+        const normalizedSource = normalizeInsightFrontmatterSource(source)
+        const { data } = matter(normalizedSource)
         return {
           slug: file.name.replace(/\.mdx$/, ""),
           ...(data as InsightFrontmatter),
@@ -91,7 +93,8 @@ export async function getAllInsights(limit?: number): Promise<InsightSummary[]> 
           const slug = fileName.replace(/\.mdx$/, "")
           const fullPath = path.join(INSIGHTS_DIR, fileName)
           const fileContents = fs.readFileSync(fullPath, "utf8")
-          const { data } = matter(fileContents)
+          const normalizedContents = normalizeInsightFrontmatterSource(fileContents)
+          const { data } = matter(normalizedContents)
 
           return {
             slug,

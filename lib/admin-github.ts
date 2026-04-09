@@ -1,3 +1,5 @@
+import { normalizeInsightFrontmatterSource } from "@/lib/utils"
+
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 const REPO_FULL_NAME = process.env.GITHUB_REPO ?? "prosolga/app.prosolga"
 const DEFAULT_BRANCH = process.env.GITHUB_BRANCH ?? "develop"
@@ -15,12 +17,29 @@ function githubHeaders() {
 }
 
 export function parseInsightFrontmatter(source: string) {
+  source = normalizeInsightFrontmatterSource(source)
   const fm = source.match(/^---\n([\s\S]*?)\n---/)
   const block = fm?.[1] || ""
 
   const read = (key: string) => {
-    const match = block.match(new RegExp(`^${key}:\\s*"([^"]*)"`, "m"))
-    return match?.[1] || ""
+    const blockScalar = new RegExp(`^${key}: \\|\\n((?:  .*\\n?)*)`, "m")
+    const blockMatch = block.match(blockScalar)
+    if (blockMatch) {
+      return blockMatch[1]
+        .split(/\r?\n/)
+        .map((line) => line.replace(/^  /, ""))
+        .join("\n")
+        .trimEnd()
+    }
+
+    const quoted = new RegExp(`^${key}:\\s*"([^"]*)"`, "m")
+    const quotedMatch = block.match(quoted)
+    if (quotedMatch) {
+      return quotedMatch[1]
+    }
+
+    const plain = new RegExp(`^${key}:\\s*(.*)$`, "m")
+    return plain.exec(block)?.[1]?.trim() || ""
   }
 
   return {
