@@ -18,7 +18,7 @@ export type InsightSummary = InsightFrontmatter & {
 
 const INSIGHTS_DIR = path.join(process.cwd(), "content/insights")
 const GITHUB_REPO = process.env.GITHUB_REPO
-const GITHUB_BRANCH = process.env.GITHUB_BRANCH ?? "main"
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH ?? "develop"
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 
 function normalizeCoverImage(src: string) {

@@ -1,6 +1,6 @@
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 const REPO_FULL_NAME = process.env.GITHUB_REPO ?? "00Photon/Prosolutions-Global-Advisory-website"
-const DEFAULT_BRANCH = process.env.GITHUB_BRANCH ?? "main"
+const DEFAULT_BRANCH = process.env.GITHUB_BRANCH ?? "develop"
 
 function githubHeaders() {
   if (!GITHUB_TOKEN) {
